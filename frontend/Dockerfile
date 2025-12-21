@@ -10,9 +10,9 @@ COPY package*.json ./
 
 # Harden npm against network instability
 RUN npm cache clean --force \
- && npm config set fetch-retries 5 \
- && npm config set fetch-retry-mintimeout 20000 \
- && npm config set fetch-retry-maxtimeout 120000 \
+ && npm config set fetch-retries 10 \
+ && npm config set fetch-retry-mintimeout 60000 \
+ && npm config set fetch-retry-maxtimeout 600000 \
  && npm install
 
 # Copy the rest of the source code
@@ -36,11 +36,11 @@ COPY --from=build /app/dist /usr/share/nginx/html
 # Copy nginx configuration
 COPY nginx.conf /etc/nginx/conf.d/default.conf
 
-# Copy wait-for-it script
-COPY wait-for-it.sh /wait-for-it.sh
-RUN chmod +x /wait-for-it.sh
+# Copy start script
+COPY start.sh /start.sh
+RUN chmod +x /start.sh
 
 EXPOSE 80
 
-# Wait for backend before starting Nginx
-CMD ["/wait-for-it.sh", "backend:8000", "--timeout=30", "--strict", "--", "nginx", "-g", "daemon off;"]
+# Use JSON array form to run the script (signal-safe)
+CMD ["/start.sh"]
