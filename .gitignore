@@ -1,0 +1,83 @@
+################################
+# General
+################################
+.DS_Store
+Thumbs.db
+*.swp
+*.swo
+*.tmp
+*.bak
+
+################################
+# Environment variables
+################################
+.env
+.env.*
+!.env.example
+.env.development
+.env.production
+
+################################
+# Python / Backend
+################################
+__pycache__/
+*.py[cod]
+*.pyo
+*.pyd
+
+# Virtual environments
+venv/
+.venv/
+env/
+
+# Python tooling
+.mypy_cache/
+.pytest_cache/
+.coverage
+htmlcov/
+
+################################
+# Node / Frontend
+################################
+node_modules/
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+pnpm-debug.log*
+
+# Vite / React build output
+dist/
+dist-ssr/
+
+################################
+# Docker
+################################
+# Local override files
+docker-compose.override.yml
+
+# Docker build cache (optional safety)
+*.dockerignore
+
+################################
+# IDE / Editor
+################################
+.vscode/*
+!.vscode/extensions.json
+!.vscode/settings.json
+
+.idea/
+*.suo
+*.ntvs*
+*.njsproj
+*.sln
+
+################################
+# Logs
+################################
+logs/
+*.log
+
+################################
+# OS / Misc
+################################
+.cache/
