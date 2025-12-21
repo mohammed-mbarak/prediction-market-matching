@@ -1,68 +1,59 @@
-import { useState, useEffect, useCallback } from 'react'
+import { useState, useEffect, useRef } from 'react'
 import { getOrderBook, getTrades } from '../services/api'
 
 export const useRealtimeData = (refreshKey) => {
   const [orderBook, setOrderBook] = useState(null)
   const [trades, setTrades] = useState([])
   const [loading, setLoading] = useState(true)
-  const [lastUpdate, setLastUpdate] = useState(null)
 
-  const fetchAllData = useCallback(async () => {
-    try {
-      console.log('🔄 Fetching real-time data...')
-      
-      const [orderBookData, tradesData] = await Promise.all([
-        getOrderBook(),
-        getTrades()
-      ])
-      
-      console.log('📊 Order Book Data:', orderBookData)
-      console.log('📈 Trades Data:', tradesData)
-      
-      // Force state update even if data appears similar
-      setOrderBook(prev => {
-        // Compare by converting to JSON string
-        const prevStr = JSON.stringify(prev)
-        const newStr = JSON.stringify(orderBookData)
-        if (prevStr !== newStr) {
-          console.log('🆕 Order book updated!')
-          return orderBookData
-        }
-        console.log('⏸️ Order book unchanged')
-        return prev
-      })
-      
-      setTrades(prev => {
-        const prevStr = JSON.stringify(prev)
-        const newStr = JSON.stringify(tradesData)
-        if (prevStr !== newStr) {
-          console.log('🆕 Trades updated!')
-          return tradesData
-        }
-        console.log('⏸️ Trades unchanged')
-        return prev
-      })
-      
-      setLastUpdate(new Date().toISOString())
-      
-    } catch (error) {
-      console.error('❌ Error fetching real-time data:', error)
-    } finally {
-      setLoading(false)
-    }
-  }, [])
+  // Store previous data refs (no re-render)
+  const prevOrderBookRef = useRef(null)
+  const prevTradesRef = useRef(null)
 
   useEffect(() => {
+    let isMounted = true
+
+    const fetchAllData = async () => {
+      try {
+        const [orderBookData, tradesData] = await Promise.all([
+          getOrderBook(),
+          getTrades()
+        ])
+
+        if (!isMounted) return
+
+        // Update order book only if changed
+        if (
+          JSON.stringify(prevOrderBookRef.current) !==
+          JSON.stringify(orderBookData)
+        ) {
+          prevOrderBookRef.current = orderBookData
+          setOrderBook(orderBookData)
+        }
+
+        // Update trades only if changed
+        if (
+          JSON.stringify(prevTradesRef.current) !==
+          JSON.stringify(tradesData)
+        ) {
+          prevTradesRef.current = tradesData
+          setTrades(tradesData)
+        }
+
+        setLoading(false)
+      } catch (err) {
+        console.error('Error fetching realtime data:', err)
+      }
+    }
+
     fetchAllData()
-    const interval = setInterval(fetchAllData, 2000)
-    
-    console.log('⏰ Polling started (2s interval)')
-    
+    const interval = setInterval(fetchAllData, 4000) // ✅ slower & smoother
+
     return () => {
-      console.log('🛑 Polling stopped')
+      isMounted = false
       clearInterval(interval)
     }
-  }, [fetchAllData, refreshKey])
+  }, [refreshKey])
 
-  return { orderBook, trades, loading, lastUpdate }
+  return { orderBook, trades, loading }
 }
