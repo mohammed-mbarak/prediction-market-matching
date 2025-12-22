@@ -42,5 +42,4 @@ RUN chmod +x /start.sh
 
 EXPOSE 80
 
-# Use JSON array form to run the script (signal-safe)
 CMD ["/start.sh"]
