@@ -27,7 +27,7 @@ const TradeHistory = ({ trades, loading }) => {
   }
 
   const tradeList = Array.isArray(trades) ? trades : []
-  const hasTrades = tradeList.length > 0
+  const hasTrades = tradeList.length > 0 || loading
 
   return (
     <Card

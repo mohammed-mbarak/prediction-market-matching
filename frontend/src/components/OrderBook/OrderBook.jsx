@@ -1,4 +1,4 @@
-import React from 'react'
+import React, { useMemo } from 'react'
 import Card from '../UI/Card'
 
 const OrderTable = ({ title, orders, isBid }) => {
@@ -19,7 +19,7 @@ const OrderTable = ({ title, orders, isBid }) => {
       <div className="divide-y divide-gray-100">
         {orders.map((level) => (
           <div
-            key={level.price} // use price as key to prevent flicker
+            key={`${level.price}-${level.total_quantity}`} // stable key
             className="px-4 py-3 hover:bg-gray-50 flex justify-between items-center"
           >
             <div className="flex items-center gap-3">
@@ -43,10 +43,11 @@ const OrderTable = ({ title, orders, isBid }) => {
 }
 
 const OrderBook = ({ orderBook, loading }) => {
-  const yesBids = orderBook?.yes_bids || []
-  const yesAsks = orderBook?.yes_asks || []
-  const noBids = orderBook?.no_bids || []
-  const noAsks = orderBook?.no_asks || []
+  // Use useMemo to keep array references stable
+  const yesBids = useMemo(() => orderBook?.yes_bids || [], [orderBook?.yes_bids])
+  const yesAsks = useMemo(() => orderBook?.yes_asks || [], [orderBook?.yes_asks])
+  const noBids = useMemo(() => orderBook?.no_bids || [], [orderBook?.no_bids])
+  const noAsks = useMemo(() => orderBook?.no_asks || [], [orderBook?.no_asks])
 
   return (
     <Card
