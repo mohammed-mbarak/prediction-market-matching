@@ -61,12 +61,12 @@ FastAPI service managing orders, order book, and trades.
 - uvicorn src.main:app --host 0.0.0.0 --port 8000 --reload
 
 **API docs:**
-Swagger UI: http://localhost:8000/docs
-ReDoc: http://localhost:8000/redoc
+- Swagger UI: http://localhost:8000/docs
+- ReDoc: http://localhost:8000/redoc
 
 
 **Frontend**
-React-based interface for interacting with the prediction market.
+- React-based interface for interacting with the prediction market.
 
 **Features**
 - Submit new orders (BUY/SELL, YES/NO, price, quantity)
@@ -80,7 +80,7 @@ React-based interface for interacting with the prediction market.
 - npm install
 - npm run dev
 
-Frontend runs at: http://localhost:5173
+- Frontend runs at: http://localhost:5173
 
 ## Installation and Quick Start
 
@@ -125,7 +125,6 @@ Frontend runs at: http://localhost:5173
 **Order Book**
 - GET /order-book/{market_id} – Get the current order book for a market
 - Response: Snapshot of resting orders for YES and NO sides
-
 - GET /trades/{market_id}?limit=50 – Get recent trades for a market
 - Optional query parameter: limit (default: 50)
 
@@ -166,7 +165,31 @@ This implementation satisfies the take-home assignment:
 - Auto-refreshes and real-time updates
 
 **Data Structures**
-Priority queues or sorted lists used for efficient matching
+The order-matching engine is designed for both efficiency and correctness:
+
+ - **Priority Queues / Sorted Lists:**
+  - Each market (YES/NO) maintains separate queues for bids and asks, sorted by price and timestamp.
+  - This ensures that the highest bid and lowest ask are always accessible for immediate matching.
+  - Aggregated order levels track total quantity and number of orders at each price, optimizing both matching logic and frontend display.
+
+ - **Order & Trade Records:**
+  - Every order has a unique order_id, timestamp, side (BUY/SELL), price, and quantity.
+  - Trades are logged with a unique trade_id and reference the buyer and seller accounts.
+  - This structure guarantees fast, reliable order matching and maintains a complete trade history for auditing and display.
 
 **Dockerized**
-Full-stack app runs via docker-compose
+The entire application is fully containerized to simplify setup and execution:
+
+- **Backend:**
+ - FastAPI service runs in its own container.
+ - Provides endpoints to fetch the current order book and recent trades.
+ - Handles order submission, matching, and trade recording.
+
+- **Frontend (React + Vite)**
+ - Provides a live, auto-refreshing view of the market.
+ - Fetches and displays order book and trade data every few seconds.
+
+- **Docker Compose:**
+ - One command (docker compose up --build) spins up the entire stack locally.
+ - Ensures consistent environment across machines, with all dependencies isolated.
+ - Easy to test and run without manual installation of Node.js, Python, or database components.
