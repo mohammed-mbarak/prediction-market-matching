@@ -110,7 +110,11 @@ class OrderBook:
                     })
 
                     level["total_quantity"] += order.remaining_quantity
-                    level["orders"].append(OrderResponse(**order.__dict__))
+                    
+                    # Create order dict with all required fields including remaining_quantity
+                    order_dict = order.__dict__.copy()
+                    order_dict["remaining_quantity"] = order.remaining_quantity
+                    level["orders"].append(OrderResponse(**order_dict))
 
                 return sorted(levels.values(), key=lambda x: x["price"], reverse=is_bid)
 
