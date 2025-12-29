@@ -99,7 +99,7 @@ FastAPI service managing orders, order book, and trades.
 1. Start the backend:
 - cd backend
 - pip install -r requirements.txt
-- uvicorn app.main:app --host 0.0.0.0 --port 8000 --reload
+- uvicorn src.main:app --host 0.0.0.0 --port 8000 --reload
 
 2. Start the frontend:
 - cd frontend
